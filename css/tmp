@@ -1,0 +1,113 @@
+h3 {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+html {
+  overflow: hidden;
+  font-family: "PT Sans Narrow", sans-serif;
+  font-size: 16px;
+}
+
+header {
+  background: #39b54a;
+  position:fixed;
+  left:0;
+  right:0;
+  top:0;
+  height: 40px;
+}
+
+header nav {
+  margin: 10px;
+}
+
+.main {
+  position:fixed;
+  left:0;
+  right:0;
+  top:0;
+  bottom:0;
+  overflow:auto;
+  margin-top:40px;
+  margin-bottom:40px;
+}
+
+
+.main > aside {
+  float: left;
+  width: 20%;
+  height: 100%;
+  background-image: url("../meida/aside-texture.jpg");
+  background-color: #cccccc;
+}
+
+.main > aside:last-child {
+  float: right;
+}
+
+.main > article {
+  display: flex;
+  justify-content: center;
+  width: 40%;
+  height: 100%;
+}
+
+.main > .poem {
+  background: red;
+}
+
+.main > .poem h3,span {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  left: 0;
+  right: 0;
+  margin: 15px;
+  text-align: left;
+}
+
+.main > .poem span {
+  text-align: right;
+}
+
+.flex-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.flex-container a {
+  margin-bottom: 20px;
+  width: 35%;
+  max-width: 80px;
+  border: none;
+}
+
+.flex-container a:last-child {
+  margin-bottom: 0px;
+}
+
+.flex-container img{
+  width: 100%;
+}
+
+footer {
+  clear: both;
+  position: fixed; /* Фиксированное положение */
+  left:0;
+  right:0;
+  bottom:0;
+  height: 40px;
+  background: #39b54a; /* Цвет фона */
+  color: #fff; /* Цвет текста */
+  width: 100%; /* Ширина слоя */
+}
+
+footer p {
+  padding: 10px;
+  padding-right: 30px;
+  text-align: right;
+}
