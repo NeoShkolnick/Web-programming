@@ -1,0 +1,161 @@
+h3 {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+p {
+  margin: 10px 0;
+  line-height: 1.2;
+}
+
+ul {
+  list-style-type: circle;
+}
+
+html {
+  overflow-x: hidden;
+  font-family: "PT Sans Narrow", sans-serif;
+  font-size: 16px;
+}
+
+
+header {
+  z-index: 10;
+  background: #39b54a;
+  position:fixed;
+  left:0;
+  right:0;
+  top:0;
+  height: 40px;
+}
+
+header nav {
+  margin: 5px;
+}
+
+header select{
+  margin-left: 10px;
+}
+
+.main {
+  margin-top:40px;
+  margin-bottom: 30px;
+}
+
+.main > aside {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 20%;
+  background-image: url("../meida/aside-texture.jpg");
+  background-color: #cccccc;
+}
+
+.main > aside:last-child {
+  left: auto;
+  right: 0;
+}
+
+.main > article {
+  margin: 0 21%;
+  width: 60%;
+}
+
+.main > .poem > div{
+  margin: 0 auto;
+  max-width: 450px;
+}
+
+.main > .poem h3,span {
+  display: inline-block;
+  width: 100%;
+  text-align: left;
+}
+
+.main > .poem h3 {
+  margin-top: 20px;
+}
+
+.main > .poem span {
+  position: relative;
+  right: 50px;
+  margin-right: 100px;
+  text-align: right;
+}
+
+.main > .about_me > div{
+  margin: 0 auto;
+  max-width: 800px;
+  padding-top: 30px;
+}
+
+.main > .about_me img {
+  float: right;
+}
+
+.main > .about_me h3{
+  text-align: center;
+}
+
+.main > .about_me ul {
+  margin-left: 20px;
+}
+
+.flex-container {
+  min-height: 300px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.flex-container a {
+  margin-bottom: 20px;
+  max-width: 80px;
+  width: 35%;
+  border: none;
+}
+
+.flex-container a:last-child {
+  margin-bottom: 0px;
+}
+
+.flex-container img{
+  width: 100%;
+}
+
+footer {
+  position: fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  height: 30px;
+  background: #39b54a;
+  color: #fff;
+}
+
+footer span {
+  position: relative;
+  right: 50px;
+  padding: 7px;
+  padding-right: 40px;
+  text-align: right;
+}
+
+@media screen and (min-width:1920px) {
+  .flex-container a {
+    max-width: 160px;
+  }
+}
+
+@media print {
+  .main > article {
+    margin: 0 10%;
+    width: 80%;
+  }
+  header, aside, footer {
+    display: none;
+  }
+}
