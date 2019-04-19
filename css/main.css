@@ -8,6 +8,10 @@ p {
   line-height: 1.2;
 }
 
+ul {
+  list-style-type: circle;
+}
+
 html {
   overflow-x: hidden;
   font-family: "PT Sans Narrow", sans-serif;
@@ -26,10 +30,10 @@ header {
 }
 
 header nav {
-  margin: 10px;
+  margin: 5px;
 }
 
-header nav  a{
+header nav{
   padding-left: 10px;
 }
 
@@ -80,6 +84,24 @@ header nav  a{
   text-align: right;
 }
 
+.main > .about_me > div{
+  margin: 0 auto;
+  max-width: 800px;
+  padding-top: 30px;
+}
+
+.main > .about_me img {
+  float: right;
+}
+
+.main > .about_me h3{
+  text-align: center;
+}
+
+.main > .about_me ul {
+  margin-left: 20px;
+}
+
 .flex-container {
   min-height: 300px;
   height: 100%;
@@ -111,7 +133,7 @@ footer {
   bottom:0;
   height: 30px;
   background: #39b54a;
-  color: #fff; /* Цвет текста */
+  color: #fff;
 }
 
 footer span {
@@ -120,4 +142,10 @@ footer span {
   padding: 7px;
   padding-right: 40px;
   text-align: right;
+}
+
+@media screen and (min-width:1920px) {
+  .flex-container a {
+    max-width: 160px;
+  }
 }
