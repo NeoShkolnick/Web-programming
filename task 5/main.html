@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+</head>
+<body>
+  <script>
+  var m = [
+    {
+      text: 'Животные',
+      childs: [
+        {
+          text: 'Млекопитающие',
+          childs: [
+            {
+              text: 'Коровы'
+            },
+            {
+              text: 'Ослы'
+            },
+            {
+              text: 'Собаки'
+            },
+            {
+              text: 'Тигры'
+            }
+          ]
+        },
+        {
+          text: 'Другие',
+          childs: [
+            {
+              text: 'Змеи'
+            },
+            {
+              text: 'Птицы'
+            },
+            {
+              text: 'Ящерицы'
+            }
+          ]
+        }
+      ]
+    },
+    {
+      text: 'Рыбы',
+      childs: [
+        {
+          text: 'Аквариумные',
+          childs: [
+            {
+              text: 'Гуппи'
+            },
+            {
+              text: 'Скалярии'
+            }
+          ]
+        },
+        {
+          text: 'Морские',
+          childs: [
+            {
+              text: 'Морская форель'
+            }
+          ]
+        }
+      ]
+    }
+  ];
+
+  let createHtml = node => {
+    let inner = node.reduce((acc, cur) => {
+      let {text, childs} = cur;
+      if (childs) {
+        return `${acc}<li>${text}${createHtml(childs)}</li>`;
+      } else {
+        return `${acc}<li>${text}</li>`;
+      }
+    }, '');
+    return `<ul>${inner}</ul>`;
+  };
+
+  document.body.innerHTML = createHtml(m);
+  </script>
+</body>
+</html>
