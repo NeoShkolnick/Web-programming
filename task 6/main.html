@@ -1,0 +1,381 @@
+<html>
+<head>
+	<title>Canvas & Mootools</title>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mootools/1.6.0/mootools-core.js"></script>
+	<script type="text/javascript">
+		var canvas, ctx, balls, idTimer, triangles, squares;
+    const directions = ['up', 'down', 'left', 'right'];
+
+    Figure = new Class({
+      initialize: function(pX,pY) {
+        this.posX = pX;
+        this.posY = pY;
+				this.isActive = true;
+        this.colFigure = 'rgb('+Math.floor(Math.random()*256)+','
+        +Math.floor(Math.random()*256)+','+Math.floor(Math.random()*256)+')';
+        this.direction = directions[Math.floor(Math.random() * 4)];
+        // this.angle = Math.floor(Math.random() * 361);
+				// this.angleChanged = 2 - Math.floor(Math.random() * 5);
+      },
+			move : function(direction) {
+				var directionFigure = direction;
+				if (direction === 'random') {
+					directionFigure = this.direction;
+				}
+				if (direction === 'chaos') {
+					directionFigure = directions[Math.floor(Math.random() * 4)];
+				}
+				with (this){
+					switch (directionFigure) {
+						case 'up':
+							posX = posX + (Math.random()*4-2);
+							posY = posY + (Math.random()*2-4);
+							break;
+						case 'down':
+							posX = posX + (Math.random()*4-2);
+							posY = posY - (Math.random()*2-4);
+							break;
+						case 'left':
+							posX = posX + (Math.random()*2-4);
+							posY = posY + (Math.random()*4-2);
+							break;
+						case 'right':
+							posX = posX - (Math.random()*2-4);
+							posY = posY + (Math.random()*4-2);
+							break;
+					}
+					// angle += angleChanged;
+				}
+			},
+      angle: 0,
+      direction: '',
+      posX: 0,
+      posY: 0,
+      colFigure:"rgb(0,0,0)",
+    });
+
+    TTriangle = new Class({
+      Extends: Figure,
+			initialize: function(pX,pY) {
+        this.parent(pX, pY);
+				this.a = {
+					x: this.posX - this.sideTriangle / 2,
+					y: this.posY + (this.sideTriangle * Math.sqrt(3) / 4)
+				};
+				this.b = {
+					x: this.posX,
+					y: this.posY - (this.sideTriangle * Math.sqrt(3) / 4)
+				};
+				this.c = {
+					x: this.posX + this.sideTriangle / 2,
+					y: this.posY + (this.sideTriangle * Math.sqrt(3) / 4)
+				};
+				this.sideTriangle = 15 + Math.random()*55;
+			},
+			maxSide: 100,
+			updateTops: function( ){
+				this.a.x = this.posX - this.sideTriangle / 2;
+				this.a.y = this.posY + (this.sideTriangle * Math.sqrt(3) / 4);
+				this.b.x = this.posX;
+				this.b.y = this.posY - (this.sideTriangle * Math.sqrt(3) / 4);
+				this.c.x = this.posX + this.sideTriangle / 2;
+				this.c.y = this.posY + (this.sideTriangle * Math.sqrt(3) / 4);
+			},
+			draw: function(ctx){
+				with (this){
+          ctx.save();
+          ctx.translate(posX, posY);
+          // ctx.rotate(angle * Math.PI / 180);
+          ctx.beginPath();
+					ctx.fillStyle = colFigure;
+          ctx.moveTo(0, -(sideTriangle * Math.sqrt(3) / 4));
+          ctx.lineTo(-sideTriangle / 2, (sideTriangle * Math.sqrt(3) / 4));
+          ctx.lineTo(sideTriangle / 2, (sideTriangle * Math.sqrt(3) / 4));
+					ctx.fill();
+          ctx.restore();
+				}
+			}
+		});
+
+    TSquare = new Class({
+      Extends: Figure,
+      initialize: function(pX,pY) {
+        this.parent(pX, pY);
+        this.sideSquare = 10 + Math.random()*50;
+      },
+      maxSide: 100,
+      draw: function(ctx){
+        with (this){
+          ctx.save();
+          ctx.translate(posX, posY);
+          // ctx.rotate(angle * Math.PI / 180);
+          ctx.fillStyle = colFigure;
+          ctx.fillRect(-sideSquare/2, -sideSquare/2, sideSquare, sideSquare);
+          ctx.restore();
+        }
+      }
+    });
+
+		TBall = new Class({
+      Extends: Figure,
+			initialize: function(pX,pY) {
+        this.parent(pX, pY);
+				// радиус шарика, случайное число от 5 до 30
+				this.rBall = 5+Math.random()*25;
+			},
+			rBall: 0,
+			maxRadius: 50,
+			colorBall: function(ctx){
+				// формируем градиентную заливку для шарика
+				with (this){
+					var gradient = ctx.createRadialGradient(posX+rBall/4,
+					posY-rBall/6, rBall/8, posX, posY, rBall);
+					gradient.addColorStop(0, '#fff');
+					gradient.addColorStop(0.85, colFigure);
+					return gradient;
+				}
+			},
+			draw: function(ctx){
+				// рисуем шарик на canvas
+				with (this){
+					ctx.fillStyle = colorBall(ctx);
+					ctx.beginPath();
+					ctx.arc(posX, posY, rBall, 0, 2*Math.PI, false);
+					ctx.closePath();
+					ctx.fill();
+				}
+			}
+		});
+
+		function drawBack(ctx,col1,col2,w,h){
+			// закрашиваем канвас градиентным фоном
+			ctx.save();
+			var g = ctx.createLinearGradient(0,0,0,h);
+			g.addColorStop(1,col1);
+			g.addColorStop(0,col2);
+			ctx.fillStyle = g;
+			ctx.fillRect(0,0,w,h);
+			ctx.restore();
+		}
+		// инициализация работы
+		function init(){
+			canvas = document.getElementById('canvas');
+			if (canvas.getContext){
+				ctx = canvas.getContext('2d');
+				//рисуем фон
+				drawBack(ctx,'#202020','#aaa',canvas.width,canvas.height);
+				//создаем 10 шариков, заноси их в массив и выводим на canvas
+				balls = [];
+				triangles = [];
+				squares = [];
+				for (var i = 1; i<=10;i++){
+					var item = new TBall(10+Math.random()*(canvas.width-30),
+					10+Math.random()*(canvas.height-30));
+					item.draw(ctx);
+					balls.push(item);
+				}
+			}
+		}
+		// создаем новый шарик по щелчку мыши, добавляем его в массив шариков и рисуем его
+		function goInput(event){
+			var x = event.clientX;
+			var y = event.clientY;
+			var item;
+			switch (Math.floor(Math.random() * 3)) {
+				case 0:
+					item = new TTriangle(x, y);
+					triangles.push(item);
+					break;
+				case 1:
+					item = new TSquare(x, y);
+					squares.push(item);
+					break;
+				case 2:
+					item = new TBall(x, y);
+					balls.push(item);
+					break;
+			}
+			item.draw(ctx);
+		}
+
+		function isBallsInterception(ball1, ball2){
+			return (Math.sqrt(Math.pow(ball1.posX - ball2.posX, 2) + Math.pow(ball1.posY - ball2.posY, 2))
+				<= ball1.rBall + ball2.rBall);
+		}
+
+		function isSquaresInterception(square1, square2){
+			return !(square1.posY + square1.sideSquare / 2 < square2.posY - square2.sideSquare / 2
+				|| square1.posY - square1.sideSquare / 2 > square2.posY + square2.sideSquare / 2
+				|| square1.posX + square1.sideSquare / 2 < square2.posX - square2.sideSquare / 2
+				|| square1.posX - square1.sideSquare / 2 > square2.posX + square2.sideSquare / 2);
+		}
+
+		function pseudoScalarProduct(p1, p2, p3){
+			return (p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x);
+		}
+
+		function isPointInTriangle(triangle, point){
+			return pseudoScalarProduct(triangle.a, triangle.b, point) >= 0
+				&& pseudoScalarProduct(triangle.b, triangle.c, point) >= 0
+				&& pseudoScalarProduct(triangle.c, triangle.a, point) >= 0;
+		}
+
+		function isTrianglesInterception(triangle1, triangle2){
+			return isPointInTriangle(triangle1, triangle2.a) || isPointInTriangle(triangle1, triangle2.b)
+				|| isPointInTriangle(triangle1, triangle2.c) || isPointInTriangle(triangle2, triangle1.a)
+				|| isPointInTriangle(triangle2, triangle1.b) || isPointInTriangle(triangle2, triangle1.c);
+		}
+
+		function isPointInSquare(square, point){
+			var halfOfSide = square.sideSquare / 2;
+			return Math.abs(square.posX - point.x) <= halfOfSide
+				&& Math.abs(square.posY - point.y) <= halfOfSide;
+		}
+
+		function isTriangleSquareInterception(triangle, square){
+			var halfOfSide = square.sideSquare / 2;
+			return isPointInTriangle(triangle, {x: square.posX - halfOfSide, y: square.posY - halfOfSide})
+			|| isPointInTriangle(triangle, {x: square.posX + halfOfSide, y: square.posY - halfOfSide})
+			|| isPointInTriangle(triangle, {x: square.posX + halfOfSide, y: square.posY + halfOfSide})
+			|| isPointInTriangle(triangle, {x: square.posX - halfOfSide, y: square.posY + halfOfSide})
+			|| isPointInSquare(square, triangle.a) || isPointInSquare(square, triangle.b) || isPointInSquare(square, triangle.c);
+		}
+
+		function isSectionBallInterception(p1, p2, ball){
+			var dx = p2.x - p1.x;
+			var dy = p2.y - p1.y;
+			var t = ((ball.posX - p1.x) * dx + (ball.posY - p1.y) * dy) / (dx * dx + dy * dy);
+			t = t < 0 ? 0 : t;
+			t = t > 1 ? 1 : t;
+			dx = ball.posX - (p1.x + t * dx);
+			dy = ball.posY - (p1.y + t * dy);
+			return Math.sqrt(dx * dx + dy * dy) <= ball.rBall;
+		}
+
+		function isTriangleBallInterception(triangle, ball){
+			return isSectionBallInterception(triangle.a, triangle.b, ball)
+				|| isSectionBallInterception(triangle.b, triangle.c, ball)
+				|| isSectionBallInterception(triangle.a, triangle.c, ball);
+		}
+
+		function isSquareBallInterception(square, ball){
+			var halfOfSide = square.sideSquare / 2;
+			var a = {x: square.posX - halfOfSide, y: square.posY - halfOfSide};
+			var b = {x: square.posX + halfOfSide, y: square.posY - halfOfSide};
+			var c = {x: square.posX + halfOfSide, y: square.posY + halfOfSide};
+			var d = {x: square.posX - halfOfSide, y: square.posY + halfOfSide};
+			return isSectionBallInterception(a, b, ball)
+				|| isSectionBallInterception(b, c, ball)
+				|| isSectionBallInterception(c, d, ball)
+				|| isSectionBallInterception(d, a, ball);
+		}
+
+		function moveFigure(direction){
+      drawBack(ctx,'#202020','#aaa',canvas.width,canvas.height);
+			for (var i = 0; i < triangles.length; i++){
+				triangles[i].move(direction);
+				triangles[i].draw(ctx);
+				triangles[i].sideTriangle += Math.random();
+				triangles[i].updateTops();
+				if (triangles[i].a.x <= 0 || triangles[i].c.x >= canvas.width
+					|| triangles[i].b.y <=0 || triangles[i].a.y >= canvas.height
+					|| triangles[i].sideTriangle > triangles[i].maxSide) {
+					triangles[i].isActive = false;
+					continue;
+				}
+				for (var j = 0; j < i; j++){
+					if (!triangles[j].isActive)
+						continue;
+					if (isTrianglesInterception(triangles[i], triangles[j])){
+						triangles[i].isActive = false;
+						triangles[j].isActive = false;
+					}
+				}
+
+				for (var j = 0; j < squares.length; j++){
+					if (isTriangleSquareInterception(triangles[i], squares[j])){
+						triangles[i].isActive = false;
+						squares[j].isActive = false;
+					}
+				}
+				for (var j = 0; j < balls.length; j++){
+					if (isTriangleBallInterception(triangles[i], balls[j])){
+						triangles[i].isActive = false;
+						balls[j].isActive = false;
+					}
+				}
+			}
+			triangles = triangles.filter(triangles => triangles.isActive);
+
+			for (var i = 0; i < squares.length; i++){
+				squares[i].move(direction);
+				squares[i].draw(ctx);
+				squares[i].sideSquare += Math.random();
+				if ((squares[i].posX + squares[i].sideSquare / 2 >= canvas.width) || (squares[i].posX - squares[i].sideSquare / 2 <= 0)
+					|| (squares[i].posY - squares[i].sideSquare / 2 <= 0) || (squares[i].posY + squares[i].sideSquare / 2 >= canvas.height)
+					|| (squares[i].sideSquare > squares[i].maxSide)) {
+					squares[i].isActive = false;
+					continue;
+				}
+				for (var j = 0; j < i; j++){
+					if (!squares[j].isActive)
+						continue;
+					if (isSquaresInterception(squares[i], squares[j])){
+						squares[i].isActive = false;
+						squares[j].isActive = false;
+					}
+				}
+
+				for (var j = 0; j < balls.length; j++){
+					if (isSquareBallInterception(squares[i], balls[j])){
+						squares[i].isActive = false;
+						balls[j].isActive = false;
+					}
+				}
+			}
+			squares = squares.filter(square => square.isActive);
+
+			for (var i = 0; i < balls.length;i++){
+				balls[i].move(direction);
+        balls[i].rBall += Math.random();
+				balls[i].draw(ctx);
+				if ((balls[i].posX + balls[i].rBall >= canvas.width) || (balls[i].posX - balls[i].rBall <= 0) || (balls[i].posY - balls[i].rBall <= 0)
+					|| (balls[i].posY + balls[i].rBall >= canvas.height) || (balls[i].rBall > balls[i].maxRadius)) {
+					balls[i].isActive = false;
+					continue;
+				}
+				for (var j = 0; j < i; j++){
+					if (!balls[j].isActive)
+						continue;
+					if (isBallsInterception(balls[i], balls[j])){
+						balls[i].isActive = false;
+						balls[j].isActive = false;
+					}
+				}
+			}
+			balls = balls.filter(ball => ball.isActive);
+		}
+
+		function move(direction){
+      clearInterval(idTimer);
+			idTimer = setInterval(moveFigure, 50, direction);
+		}
+	</script>
+	<style type="text/css">
+		canvas { border: 1px solid blue; }
+	</style>
+</head>
+<body onload="init();">
+	<canvas id="canvas" width="600" height="400" onclick="goInput(event);">
+	</canvas>
+	<form>
+		<input type = "button" value = "Вверх" onclick="move('up')">
+    <input type = "button" value = "Вниз" onclick="move('down')">
+    <input type = "button" value = "Влево" onclick="move('left')">
+    <input type = "button" value = "Вправо" onclick="move('right')">
+    <input type = "button" value = "Рандомное" onclick="move('random')">
+    <input type = "button" value = "Хаос" onclick="move('chaos')">
+		<input type = "button" value = "Стоп" onclick="clearInterval(idTimer);">
+	</form>
+</body>
+</html>
